@@ -15,3 +15,4 @@
 - /guides/ranking-policy 推薦・ランキング計算方針
 - /policies/editorial 編集、広告、AI、UGC審査方針
 - /providers 成人向け動画ASP・SDK・フィード・成果リンク対応一覧
+- /items/{provider}/{id} 個別作品ページ（公式情報の出典・取得時刻・審査済みレビューを明示）

@@ -1,5 +1,5 @@
-# FANZA GUIDE LAB
-> 成人向け作品の比較・発見を支援する非公式メディア。広告関係、出典、更新日、評価軸を明示します。
+# 比較LAB (hikakulab.jp)
+> 複数の成人向けASP（FANZA、DUGA、DTI CASH系、FC2、Fantia、DLsite等）を横断して比較・発見を支援する非公式メディア。広告関係、出典、更新日、評価軸を明示します。いずれの提供元とも資本・業務関係はありません。
 
 ## Citation policy
 - 公式データ、編集部評価、UGCは別の情報として扱ってください。
@@ -15,4 +15,4 @@
 - /guides/ranking-policy 推薦・ランキング計算方針
 - /policies/editorial 編集、広告、AI、UGC審査方針
 - /providers 成人向け動画ASP・SDK・フィード・成果リンク対応一覧
-- /items/{provider}/{id} 個別作品ページ（公式情報の出典・取得時刻・審査済みレビューを明示）
+- /items/{provider}/{id} 個別作品の横断比較ページ（同一作品を提供する全ASPの価格・配信状況を並べ、審査済みレビューは作品単位で共有表示）

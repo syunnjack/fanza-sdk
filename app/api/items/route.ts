@@ -1,8 +1,8 @@
-import { and, desc, eq, like } from "drizzle-orm";
+import { and, eq, desc, inArray, like, sql } from "drizzle-orm";
 import { getDb } from "../../../db";
-import { providerItems } from "../../../db/schema";
+import { providerItems, reviews } from "../../../db/schema";
 import { providers } from "../../../lib/providers";
-import { groupDuplicates, type CatalogItem } from "../../../lib/normalize";
+import { catalogItemFromRow, duplicateKey, groupDuplicates, pickPrimary, type CatalogItem } from "../../../lib/normalize";
 
 const ENDPOINT = "https://api.dmm.com/affiliate/v3/ItemList";
 const allowedSort = new Set(["rank", "date", "price", "review"]);
@@ -17,8 +17,6 @@ type DmmItem = {
   iteminfo?: { genre?: Array<{ name?: string }> };
 };
 
-type ProviderItemRow = typeof providerItems.$inferSelect;
-
 function fromDmm(item: DmmItem, fetchedAt: string): CatalogItem | null {
   if (!item.content_id || !item.title || !item.affiliateURL) return null;
   const price = item.prices?.price ? Number(item.prices.price.replace(/[^\d]/g, "")) : undefined;
@@ -32,22 +30,6 @@ function fromDmm(item: DmmItem, fetchedAt: string): CatalogItem | null {
     affiliateUrl: item.affiliateURL,
     fetchedAt,
     sourceType: "api",
-  };
-}
-
-function fromRow(row: ProviderItemRow): CatalogItem {
-  return {
-    providerId: row.providerId,
-    providerItemId: row.providerItemId,
-    title: row.title,
-    maker: row.maker ?? undefined,
-    catalogNumber: row.catalogNumber ?? undefined,
-    price: row.price ?? undefined,
-    currency: "JPY",
-    available: row.available,
-    affiliateUrl: row.affiliateUrl,
-    fetchedAt: row.fetchedAt.toISOString(),
-    sourceType: row.sourceType as CatalogItem["sourceType"],
   };
 }
 
@@ -118,7 +100,7 @@ export async function GET(request: Request) {
     const db = getDb();
     const condition = keyword ? and(eq(providerItems.available, true), like(providerItems.title, `%${keyword}%`)) : eq(providerItems.available, true);
     const rows = await db.select().from(providerItems).where(condition).orderBy(desc(providerItems.fetchedAt)).limit(30);
-    cachedItems = rows.map(fromRow);
+    cachedItems = rows.map(catalogItemFromRow);
   } catch {
     // DB is optional for the search endpoint; live results (if any) are still returned.
   }
@@ -133,13 +115,35 @@ export async function GET(request: Request) {
   }
 
   const groups = groupDuplicates(merged).slice(0, hits);
+
+  // Reviews are keyed by the same duplicate-group id (see /items/[provider]/[id]) so a rating
+  // earned on one provider's page shows up on the comparison card regardless of which provider
+  // is picked as the primary/display row for that group.
+  const groupKeys = groups.map(group => duplicateKey(pickPrimary(group)));
+  const ratingByKey = new Map<string, { average: number; count: number }>();
+  if (groupKeys.length) {
+    try {
+      const db = getDb();
+      const rows = await db.select({
+        productId: reviews.productId,
+        average: sql<number>`avg(${reviews.rating})`,
+        count: sql<number>`count(*)`,
+      }).from(reviews).where(and(eq(reviews.status, "approved"), inArray(reviews.productId, groupKeys))).groupBy(reviews.productId);
+      for (const row of rows) ratingByKey.set(row.productId, { average: Math.round(row.average * 10) / 10, count: row.count });
+    } catch {
+      // Rating badges are a nice-to-have on the search grid; omit them if the DB is unavailable.
+    }
+  }
+
   const items = groups.map(group => {
-    const primary = group.find(i => i.providerId === "fanza") ?? group[0];
+    const primary = pickPrimary(group);
+    const productId = duplicateKey(primary);
     const meta = dmmMetaById.get(primary.providerItemId);
     const otherProviderIds = [...new Set(group.filter(i => i.providerId !== primary.providerId).map(i => i.providerId))];
     return {
-      productId: `${primary.providerId}:${primary.providerItemId}`,
+      productId,
       providerId: primary.providerId,
+      providerItemId: primary.providerItemId,
       providerName: providerNames.get(primary.providerId) ?? primary.providerId,
       title: primary.title,
       price: primary.price ?? null,
@@ -148,6 +152,7 @@ export async function GET(request: Request) {
       affiliateUrl: primary.affiliateUrl,
       sourceType: primary.sourceType,
       alsoAvailableFrom: otherProviderIds.map(id => providerNames.get(id) ?? id),
+      rating: ratingByKey.get(productId) ?? null,
     };
   });
 

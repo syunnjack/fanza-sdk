@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const reviews = sqliteTable("reviews", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -12,3 +12,17 @@ export const reviews = sqliteTable("reviews", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   reviewedAt: integer("reviewed_at", { mode: "timestamp" }),
 });
+
+export const providerItems = sqliteTable("provider_items", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  providerId: text("provider_id").notNull(),
+  providerItemId: text("provider_item_id").notNull(),
+  title: text("title").notNull(),
+  maker: text("maker"),
+  catalogNumber: text("catalog_number"),
+  price: integer("price"),
+  affiliateUrl: text("affiliate_url").notNull(),
+  sourceType: text("source_type").notNull().default("feed"),
+  available: integer("available", { mode: "boolean" }).notNull().default(true),
+  fetchedAt: integer("fetched_at", { mode: "timestamp" }).notNull(),
+}, table => [uniqueIndex("provider_item_unique").on(table.providerId, table.providerItemId)]);

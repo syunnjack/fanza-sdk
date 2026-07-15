@@ -14,3 +14,4 @@
 - /guides/privacy 好み情報とプライバシー
 - /guides/ranking-policy 推薦・ランキング計算方針
 - /policies/editorial 編集、広告、AI、UGC審査方針
+- /providers 成人向け動画ASP・SDK・フィード・成果リンク対応一覧

@@ -1,11 +1,15 @@
 "use client";
 import { useState } from "react";
+import { ProductExplorer } from "./product-explorer";
+import { UgcForm } from "./ugc-form";
 
 const picks = [
   { rank: "01", title: "ストーリー重視", copy: "あらすじ・シリーズ情報・レビューの具体性を軸に探す", score: "編集部評価 4.7", tag: "初めての方へ" },
   { rank: "02", title: "短時間で選ぶ", copy: "発売日、価格帯、収録時間を同じ条件で比較", score: "情報鮮度 24h以内", tag: "比較しやすい" },
   { rank: "03", title: "新しい好みを発見", copy: "閲覧履歴ではなく、作品属性と審査済みUGCから探索", score: "UGC 128件", tag: "発見性" },
 ];
+
+function SeoHub() { return <section className="section"><div className="sectionHead"><p className="eyebrow">GUIDES & CATEGORIES</p><h2>根拠から選ぶガイド</h2><p>検索意図ごとに、結論・比較軸・向く人を整理。</p></div><div className="cards"><article className="card"><b>START</b><h3>初めての選び方</h3><p>目的、時間、価格、雰囲気の順に確認。</p><footer><a href="/guides/hajimete">読む →</a></footer></article><article className="card"><b>TRUST</b><h3>ランキング計算方針</h3><p>推薦理由と広告報酬0%の考え方。</p><footer><a href="/guides/ranking-policy">読む →</a></footer></article><article className="card"><b>TASTE</b><h3>好み別カテゴリ</h3><p><a href="/categories/story">ストーリー</a>・<a href="/categories/costume">コスチューム</a>・<a href="/categories/romantic">ロマンチック</a>・<a href="/categories/long-form">長編</a></p><footer><a href="/guides/privacy">プライバシー方針 →</a></footer></article></div></section> }
 
 function TasteMatch() {
   const options = ["物語重視", "ロマンチック", "コスチューム", "年上", "同年代", "主導されたい", "主導したい", "ソフト表現", "非日常", "長編"];
@@ -17,8 +21,7 @@ function TasteMatch() {
 export function SiteClient() {
   const [adult, setAdult] = useState(false);
   const [sent, setSent] = useState(false);
-  if (!adult) return <main className="gate"><div className="gateCard"><p className="eyebrow">AGE CONFIRMATION</p><h1>ここから先は<br />成人向け情報を含みます。</h1><p>18歳未満の方はご利用いただけません。画像は初期状態では表示せず、安心して比較できる設計です。</p><button onClick={() => setAdult(true)}>18歳以上です</button><a href="https://www.dmm.com/">退出する</a><small>年齢確認はこの端末内にのみ保存されます（MVPではセッション中のみ）。</small></div></main>;
-  return <main><TasteMatch />
+  return <main>{!adult && <div className="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="age-title"><div className="gateCard"><p className="eyebrow">AGE CONFIRMATION</p><h1 id="age-title">ここから先は<br />成人向け情報を含みます。</h1><p>18歳未満の方は利用できません。本文は検索可能なテキストとして保持し、センシティブ画像は確認前に表示しません。</p><button onClick={() => setAdult(true)}>18歳以上です</button><a href="https://www.dmm.com/">退出する</a><a href="/policies/editorial">編集・安全方針を確認</a></div></div>}<TasteMatch /><ProductExplorer /><SeoHub /><UgcForm />
     <div className="notice">PR・広告を含みます　｜　最終更新 2026.07.15　｜　情報源：DMM Affiliate API v3 / 各公式ページ</div>
     <header><a className="logo" href="#top">FANZA <i>GUIDE LAB</i></a><nav><a href="#find">見つける</a><a href="#method">評価方針</a><a href="#voices">みんなの声</a><a href="#sdk">APIガイド</a></nav></header>
     <section className="hero" id="top"><div><p className="eyebrow">CHOOSE WITH CONTEXT, NOT HYPE.</p><h1>作品選びを、<br /><em>透明</em>に。</h1><p className="lead">広告だから推す、を終わらせる。出典・更新日・評価軸・ユーザーの声を分けて示す、比較と発見のガイドです。</p><div className="actions"><a className="primary" href="#find">自分に合う探し方を見る</a><a href="#method">編集方針を読む →</a></div></div><aside><span>編集部の約束</span><strong>報酬額だけで<br />順位を決めません。</strong><p>公式データとUGCを混同せず、広告リンクには明確な表示を付けます。</p></aside></section>

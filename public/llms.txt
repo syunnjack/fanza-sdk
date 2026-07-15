@@ -10,3 +10,7 @@
 - /#method 評価・編集方針
 - /#voices 審査済みUGCと投稿ポリシー
 - /#sdk DMM Affiliate API v3の安全な利用ガイド
+- /guides/hajimete 初めての作品選び
+- /guides/privacy 好み情報とプライバシー
+- /guides/ranking-policy 推薦・ランキング計算方針
+- /policies/editorial 編集、広告、AI、UGC審査方針

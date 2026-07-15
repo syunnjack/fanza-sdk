@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+const names:Record<string,string>={story:"ストーリー重視",costume:"コスチューム",romantic:"ロマンチック", "long-form":"長編"};
+export function generateStaticParams(){return Object.keys(names).map(slug=>({slug}));}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;return{title:`${names[slug]??"好み"}から探す`,description:`${names[slug]??"好み"}を判断軸にした、画像に頼らない作品比較ガイド。`,alternates:{canonical:`/categories/${slug}`}};}
+export default async function Category({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const name=names[slug]??"好み";return <><nav className="policyNav"><a href="/">トップ</a><a href="/guides/hajimete">初めての方へ</a></nav><article className="policyShell"><p className="eyebrow">TASTE CATEGORY</p><h1>{name}から探す</h1><p><strong>結論：</strong>{name}を重視する人は、タイトルだけでなく公式のあらすじ、収録時間、シリーズ、審査済みUGCの具体性を確認すると選びやすくなります。</p><h2>向いている人</h2><p>{name}を明確な判断軸として比較したい人。人気順ではなく、選んだ理由が見える候補を探したい人。</p><h2>比較基準</h2><p>公式情報の充実度、情報の更新日時、同じ軸を選んだUGCの件数を分離して表示します。広告報酬額は順位に使いません。</p><h2>公式情報を検索</h2><p><a href="/#products">API検索へ移動 →</a></p><p>編集部確認：2026年7月15日</p></article></>}

@@ -7,11 +7,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+const siteUrl = process.env.SITE_URL ?? "https://fanza-sdk.example.com";
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", name: "FANZA GUIDE LAB", url: "https://example.com/", inLanguage: "ja-JP" },
-    { "@type": "Organization", name: "FANZA GUIDE LAB 編集部", url: "https://example.com/" },
+    { "@type": "WebSite", name: "FANZA GUIDE LAB", url: siteUrl, inLanguage: "ja-JP" },
+    { "@type": "Organization", name: "FANZA GUIDE LAB 編集部", url: siteUrl },
     { "@type": "FAQPage", mainEntity: [
       { "@type": "Question", name: "ランキングはどのように作成していますか？", acceptedAnswer: { "@type": "Answer", text: "公式APIの公開情報、情報の鮮度、価格、ユーザーの審査済み評価を分離して表示し、広告報酬だけで順位を決めません。" } },
       { "@type": "Question", name: "口コミはすべて掲載されますか？", acceptedAnswer: { "@type": "Answer", text: "いいえ。個人情報、誹謗中傷、権利侵害、スパム、具体的すぎる性的表現を含む投稿は公開しません。" } }

@@ -3,12 +3,13 @@ import { Noto_Sans_JP, Shippori_Mincho } from "next/font/google";
 import "./globals.css";
 import "./recommend.css";
 import "./taste.css";
+import "./system.css";
 
 const sans = Noto_Sans_JP({ variable: "--font-sans", subsets: ["latin"] });
 const serif = Shippori_Mincho({ variable: "--font-serif", weight: ["600", "700"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fanza-guide-lab.example.com"),
+  metadataBase: new URL(process.env.SITE_URL ?? "https://fanza-sdk.example.com"),
   title: { default: "FANZA GUIDE LAB", template: "%s｜FANZA GUIDE LAB" },
   description: "出典と評価軸がわかる、成人向け作品の比較・発見ガイド。",
   robots: { index: true, follow: true },
